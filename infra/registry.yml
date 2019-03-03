@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: reg-deployment
+  labels:
+    app: reg
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: reg
+  template:
+    metadata:
+      labels:
+        app: reg
+    spec:
+      volumes:
+      - name: registry
+        persistentVolumeClaim:
+          claimName: registry-pv-claim
+      containers:
+      - name: reg
+        image: registry:latest
+        ports:
+        - containerPort: 5000
+        volumeMounts:
+        - name: registry
+          mountPath: /var/lib/registry
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: reg-ui-deployment
+  labels:
+    app: reg-ui
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: reg-ui
+  template:
+    metadata:
+      labels:
+        app: reg-ui
+    spec:
+      containers:
+      - name: reg-ui
+        image: joxit/docker-registry-ui:static
+        env:
+        - name: REGISTRY_URL
+          value: "http://reg-service:5000"
+        ports:
+        - containerPort: 80
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: reg-service
+spec:
+  selector:
+    app: reg
+  ports:
+  - protocol: TCP
+    port: 5000
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: reg-ui-service
+spec:
+  selector:
+    app: reg-ui
+  ports:
+  - protocol: TCP
+    port: 80
+---

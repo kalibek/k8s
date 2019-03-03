@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cmd-deployment
+  labels:
+    app: cmd
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cmd
+  template:
+    metadata:
+      labels:
+        app: cmd
+    spec:
+      containers:
+      - name: cmd
+        image: reg.example.com/cmd:latest
+        ports:
+        - containerPort: 9000
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: cmd-service
+spec:
+  selector:
+    app: cmd
+  ports:
+  - protocol: TCP
+    port: 9000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: static-deployment
+  labels:
+    app: static
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: static
+  template:
+    metadata:
+      labels:
+        app: static
+    spec:
+      containers:
+      - name: static
+        image: reg.example.com/static:latest
+        ports:
+        - containerPort: 80
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: static-service
+spec:
+  selector:
+    app: static
+  ports:
+  - protocol: TCP
+    port: 80
+---

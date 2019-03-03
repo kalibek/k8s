@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>kube example</title>
+</head>
+
+<body>
+    <pre id="log"></pre>
+    <script>
+        (function () {
+            log = document.getElementById("log");
+
+            setInterval(() => {
+                fetch("/api/hello", {
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                })
+                    .then(res => res.json())
+                    .then(d => log.innerHTML += `\nserver returned ${d.code} with message: ${d.message} at ${d.created}`)
+                    .catch(err => log.innerHTML += `\nserver returned error: ${err}`);
+            }, 2000);
+
+        })()
+    </script>
+</body>
+
+</html>
