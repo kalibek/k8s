@@ -6,7 +6,21 @@ metadata:
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   rules:
-  - http:
+  - host: registry.local
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: reg-service
+          servicePort: 5000
+  - host: ui.registry.local
+    http:
+      paths:
+      - backend:
+          serviceName: reg-ui-service
+          servicePort: 80
+  - host: app.local
+    http:
       paths:
       - path: /
         backend:
@@ -16,3 +30,7 @@ spec:
         backend:
           serviceName: cmd-service
           servicePort: 9000
+  tls:
+    - hosts:
+      - registy.local
+      secretName: docker-tls 
